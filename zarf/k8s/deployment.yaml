@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: httpserver-deployment
+  labels:
+    app: httpserver-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: httpserver-deployment
+  template:
+    metadata:
+      name: httpserver-deployment
+      labels:
+        app: httpserver-deployment
+    spec:
+      containers:
+        - name: httpserver-dep
+          image: docker.io/fkaanoz/cecilia:latest
+          ports:
+            - containerPort: 1234
+              name: http
+              protocol: TCP
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+          livenessProbe:
+            failureThreshold: 50
+            initialDelaySeconds: 10
+            timeoutSeconds: 10
+            httpGet:
+              port: 1234
+              path: "/healthy"
+      restartPolicy: Always
