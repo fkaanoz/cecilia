@@ -17,7 +17,8 @@ spec:
     spec:
       containers:
         - name: httpserver-dep
-          image: docker.io/fkaanoz/cecilia:latest
+          image: docker.io/fkaanoz/cecilia:1.1.0
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 1234
               name: http
@@ -27,8 +28,8 @@ spec:
               cpu: "100m"
               memory: "128Mi"
           livenessProbe:
-            failureThreshold: 50
-            initialDelaySeconds: 10
+            failureThreshold: 5
+            initialDelaySeconds: 5
             timeoutSeconds: 10
             httpGet:
               port: 1234

@@ -1,0 +1,31 @@
+package web
+
+import (
+	"context"
+	"github.com/dimfeld/httptreemux/v5"
+	"go.uber.org/zap"
+	"net/http"
+	"time"
+)
+
+type Handler func(ctx context.Context, w http.ResponseWriter, r *http.Request) error
+type Middleware func(handler Handler) Handler
+
+type App struct {
+	*httptreemux.ContextMux
+	Logger    *zap.SugaredLogger
+	ServerErr chan error
+}
+
+func (a *App) Handle(method string, path string, handler Handler) {
+	h := func(w http.ResponseWriter, r *http.Request) {
+		ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+		defer cancel()
+
+		if err := handler(ctx, w, r); err != nil {
+			a.ServerErr <- err
+		}
+	}
+
+	a.ContextMux.Handle(method, path, h)
+}
