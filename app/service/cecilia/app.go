@@ -24,7 +24,7 @@ func NewApiServer(config ApiConfig) *web.App {
 }
 
 func v1(app *web.App) *web.App {
-	app.Handle(http.MethodGet, "/health", handlers.Health)
+	app.Handle(http.MethodGet, "/healthy", handlers.Health)
 
 	return app
 }

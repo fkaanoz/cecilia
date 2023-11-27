@@ -1,12 +1,12 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: httpserver-svc
+  name: redis-svc
 spec:
   selector:
-    app: httpserver-deployment
+    app: redis-svc
   ports:
     - protocol: TCP
       port: 80
-      targetPort: 8080
+      targetPort: 6379
   type: NodePort

@@ -18,8 +18,10 @@ type App struct {
 }
 
 func (a *App) Handle(method string, path string, handler Handler) {
+
 	h := func(w http.ResponseWriter, r *http.Request) {
-		ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+
+		ctx, cancel := context.WithTimeout(context.Background(), time.Second*30)
 		defer cancel()
 
 		if err := handler(ctx, w, r); err != nil {

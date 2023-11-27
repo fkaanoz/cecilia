@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: httpserver-dep
-          image: docker.io/fkaanoz/cecilia:1.1.0
+          image: docker.io/fkaanoz/cecilia:1.1.1
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 1234
@@ -32,6 +32,6 @@ spec:
             initialDelaySeconds: 5
             timeoutSeconds: 10
             httpGet:
-              port: 1234
+              port: 8080
               path: "/healthy"
       restartPolicy: Always

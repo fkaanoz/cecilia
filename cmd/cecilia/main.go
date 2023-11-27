@@ -40,6 +40,9 @@ func run(logger *zap.SugaredLogger) error {
 		Web struct {
 			Addr            string        `conf:"default:0.0.0.0:8080"`
 			ShutdownTimeout time.Duration `conf:"default:20s"`
+			ReadTimeout     time.Duration `conf:"default:20s"`
+			WriteTimeout    time.Duration `conf:"default:20s"`
+			IdleTimeout     time.Duration `conf:"default:120s"`
 		}
 	}{
 		Version: conf.Version{
@@ -68,9 +71,9 @@ func run(logger *zap.SugaredLogger) error {
 			Logger:    logger,
 			ServerErr: serverErrCh,
 		}),
-		ReadTimeout:  0,
-		WriteTimeout: 0,
-		IdleTimeout:  0,
+		ReadTimeout:  cfg.Web.ReadTimeout,
+		IdleTimeout:  cfg.Web.IdleTimeout,
+		WriteTimeout: cfg.Web.WriteTimeout,
 	}
 
 	go func() {

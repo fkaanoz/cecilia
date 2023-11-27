@@ -3,7 +3,7 @@
 service 		:= cecilia
 clusterName 	:= cecilia-cluster
 serviceNS 		:= cecilia-system
-imageName 		:= docker.io/fkaanoz/$(service):1.1.0
+imageName 		:= docker.io/fkaanoz/$(service):1.1.1
 release 		:= `git rev-parse --short=8 HEAD`
 
 #################### LOCAL ########################
@@ -44,11 +44,6 @@ cluster-apply-deployment:
 
 cluster-delete-deployment:
 	kubectl delete -f ./zarf/k8s/deployment.yaml
-
-
-#
-# cluster-logs:
-#	kubectl logs pods/
 
 cluster-deploy: image-build cluster-image-upload cluster-apply-deployment
 
