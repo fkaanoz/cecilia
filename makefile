@@ -51,3 +51,9 @@ cluster-deploy: image-build cluster-image-upload cluster-apply-deployment
 
 image-build:
 	docker build -t $(imageName)  -f ./zarf/docker/Dockerfile --build-arg RELEASE=$(release) .
+
+
+#################### HELPERS ########################
+
+create-random-password:
+	dd if=/dev/urandom bs=1 count=32 | shasum -a 256

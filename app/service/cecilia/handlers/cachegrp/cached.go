@@ -2,6 +2,7 @@ package cachegrp
 
 import (
 	"context"
+	"fmt"
 	"github.com/fkaanoz/cecilia.git/business/core"
 	"net/http"
 )
@@ -14,6 +15,7 @@ func (cg *CacheGrp) CachedResultHn(ctx context.Context, w http.ResponseWriter, r
 
 	sid, err := cg.Core.ReadSessionID("BC8B826B-DC2E-48C5-9D55-8B5041A49378")
 	if err != nil {
+		fmt.Println("err", err)
 		w.Write([]byte("no cached result"))
 		return nil
 	}

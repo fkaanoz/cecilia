@@ -46,8 +46,8 @@ func run(logger *zap.SugaredLogger) error {
 			IdleTimeout     time.Duration `conf:"default:120s"`
 		}
 		Redis struct {
-			Username string `conf:"default:redis"`
-			Password string `conf:"default:fkaanoz"`
+			Username string `conf:"default:fkaanoz"`
+			Password string `conf:"default:7733700991bcfd88576227e4f4eb656a5c75e9d151c5d6233ea6d081ef97d78c"`
 			Host     string `conf:"default:0.0.0.0"`
 			Port     string `conf:"default:6379"`
 			Database string `conf:"cecilia"`
