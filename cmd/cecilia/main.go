@@ -7,6 +7,7 @@ import (
 	"github.com/ardanlabs/conf/v3"
 	"github.com/fkaanoz/cecilia.git/app/service/cecilia"
 	"github.com/fkaanoz/cecilia.git/business/logger"
+	"github.com/fkaanoz/cecilia.git/foundation/redis"
 	"go.uber.org/zap"
 	"log"
 	"net/http"
@@ -44,6 +45,13 @@ func run(logger *zap.SugaredLogger) error {
 			WriteTimeout    time.Duration `conf:"default:20s"`
 			IdleTimeout     time.Duration `conf:"default:120s"`
 		}
+		Redis struct {
+			Username string `conf:"default:redis"`
+			Password string `conf:"default:fkaanoz"`
+			Host     string `conf:"default:0.0.0.0"`
+			Port     string `conf:"default:6379"`
+			Database string `conf:"cecilia"`
+		}
 	}{
 		Version: conf.Version{
 			Build: build,
@@ -65,11 +73,25 @@ func run(logger *zap.SugaredLogger) error {
 	shutdownCh := make(chan os.Signal, 1)
 	signal.Notify(shutdownCh, syscall.SIGTERM, syscall.SIGINT)
 
+	// init redis client
+	redisClient, err := redis.Connect(redis.Config{
+		Username: cfg.Redis.Username,
+		Password: cfg.Redis.Password,
+		Host:     cfg.Redis.Host,
+		Port:     cfg.Redis.Port,
+		Database: cfg.Redis.Database,
+	})
+
+	if err != nil {
+		return err
+	}
+
 	server := http.Server{
 		Addr: cfg.Web.Addr,
 		Handler: cecilia.NewApiServer(cecilia.ApiConfig{
-			Logger:    logger,
-			ServerErr: serverErrCh,
+			Logger:      logger,
+			ServerErr:   serverErrCh,
+			RedisClient: redisClient,
 		}),
 		ReadTimeout:  cfg.Web.ReadTimeout,
 		IdleTimeout:  cfg.Web.IdleTimeout,

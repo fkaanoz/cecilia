@@ -3,6 +3,7 @@ package web
 import (
 	"context"
 	"github.com/dimfeld/httptreemux/v5"
+	"github.com/redis/go-redis/v9"
 	"go.uber.org/zap"
 	"net/http"
 	"time"
@@ -13,8 +14,9 @@ type Middleware func(handler Handler) Handler
 
 type App struct {
 	*httptreemux.ContextMux
-	Logger    *zap.SugaredLogger
-	ServerErr chan error
+	Logger      *zap.SugaredLogger
+	ServerErr   chan error
+	RedisClient *redis.Client
 }
 
 func (a *App) Handle(method string, path string, handler Handler) {
