@@ -58,5 +58,5 @@ image-build:
 create-random-password:
 	dd if=/dev/urandom bs=1 count=32 | shasum -a 256
 
-commit-to-main:
+push:
 	git add . && git commit -m "$(message)" && git push origin main
