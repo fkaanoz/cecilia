@@ -3,6 +3,7 @@ package web
 import (
 	"context"
 	"github.com/dimfeld/httptreemux/v5"
+	"github.com/jmoiron/sqlx"
 	"github.com/redis/go-redis/v9"
 	"go.uber.org/zap"
 	"net/http"
@@ -17,6 +18,7 @@ type App struct {
 	Logger      *zap.SugaredLogger
 	ServerErr   chan error
 	RedisClient *redis.Client
+	Database    *sqlx.DB
 }
 
 func (a *App) Handle(method string, path string, handler Handler) {

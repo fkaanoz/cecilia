@@ -7,6 +7,7 @@ import (
 	"github.com/ardanlabs/conf/v3"
 	"github.com/fkaanoz/cecilia.git/app/service/cecilia"
 	"github.com/fkaanoz/cecilia.git/business/logger"
+	"github.com/fkaanoz/cecilia.git/business/store"
 	"github.com/fkaanoz/cecilia.git/foundation/redis"
 	"go.uber.org/zap"
 	"log"
@@ -39,11 +40,12 @@ func run(logger *zap.SugaredLogger) error {
 	cfg := struct {
 		conf.Version
 		Web struct {
-			Addr            string        `conf:"default:0.0.0.0:8080"`
-			ShutdownTimeout time.Duration `conf:"default:20s"`
-			ReadTimeout     time.Duration `conf:"default:20s"`
-			WriteTimeout    time.Duration `conf:"default:20s"`
-			IdleTimeout     time.Duration `conf:"default:120s"`
+			Addr              string        `conf:"default:0.0.0.0:8080"`
+			ShutdownTimeout   time.Duration `conf:"default:20s"`
+			ReadTimeout       time.Duration `conf:"default:20s"`
+			WriteTimeout      time.Duration `conf:"default:20s"`
+			IdleTimeout       time.Duration `conf:"default:120s"`
+			ReadTimeoutHeader time.Duration `conf:"default:10s"`
 		}
 		Redis struct {
 			Username string `conf:"default:fkaanoz"`
@@ -51,6 +53,13 @@ func run(logger *zap.SugaredLogger) error {
 			Host     string `conf:"default:0.0.0.0"`
 			Port     string `conf:"default:6379"`
 			Database string `conf:"cecilia"`
+		}
+		DB struct {
+			Host     string `conf:"default:localhost"`
+			Port     string `conf:"default:5432"`
+			Username string `conf:"default:postgres"`
+			Password string `conf:"default:fkaanoz"`
+			Database string `conf:"default:cecilia"`
 		}
 	}{
 		Version: conf.Version{
@@ -81,7 +90,17 @@ func run(logger *zap.SugaredLogger) error {
 		Port:     cfg.Redis.Port,
 		Database: cfg.Redis.Database,
 	})
+	if err != nil {
+		return err
+	}
 
+	db, err := store.Connect(store.Config{
+		Host:     cfg.DB.Host,
+		Port:     cfg.DB.Port,
+		Username: cfg.DB.Username,
+		Password: cfg.DB.Password,
+		Database: cfg.DB.Database,
+	}, false)
 	if err != nil {
 		return err
 	}
@@ -92,10 +111,12 @@ func run(logger *zap.SugaredLogger) error {
 			Logger:      logger,
 			ServerErr:   serverErrCh,
 			RedisClient: redisClient,
+			Database:    db,
 		}),
-		ReadTimeout:  cfg.Web.ReadTimeout,
-		IdleTimeout:  cfg.Web.IdleTimeout,
-		WriteTimeout: cfg.Web.WriteTimeout,
+		ReadTimeout:       cfg.Web.ReadTimeout,
+		ReadHeaderTimeout: cfg.Web.ReadTimeoutHeader,
+		IdleTimeout:       cfg.Web.IdleTimeout,
+		WriteTimeout:      cfg.Web.WriteTimeout,
 	}
 
 	go func() {

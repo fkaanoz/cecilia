@@ -29,10 +29,10 @@ func Connect(cfg Config, sslRequired bool) (*sqlx.DB, error) {
 		User:     url.UserPassword(cfg.Username, cfg.Password),
 		Host:     net.JoinHostPort(cfg.Host, cfg.Port),
 		Path:     cfg.Database,
-		RawQuery: fmt.Sprintf("sslmode=%stimezone=Europe/Istanbul", sslMode),
+		RawQuery: fmt.Sprintf("sslmode=%s&timezone=Europe/Istanbul", sslMode),
 	}
 
-	conn, err := sqlx.Connect("potgres", connStr.String())
+	conn, err := sqlx.Connect("postgres", connStr.String())
 	if err != nil {
 		return nil, err
 	}
