@@ -5,6 +5,7 @@ import (
 	"github.com/fkaanoz/cecilia.git/app/service/cecilia/handlers"
 	"github.com/fkaanoz/cecilia.git/app/service/cecilia/handlers/usergrp"
 	"github.com/fkaanoz/cecilia.git/business/core"
+	"github.com/fkaanoz/cecilia.git/business/mids"
 	"github.com/fkaanoz/cecilia.git/foundation/web"
 	"github.com/jmoiron/sqlx"
 	"github.com/redis/go-redis/v9"
@@ -26,6 +27,9 @@ func NewApiServer(config ApiConfig) *web.App {
 		ServerErr:   config.ServerErr,
 		RedisClient: config.RedisClient,
 		Database:    config.Database,
+		Middlewares: []web.Middleware{
+			mids.Logger(config.Logger),
+		},
 	}
 
 	return v1(a)
@@ -38,7 +42,6 @@ func v1(app *web.App) *web.App {
 		Core:  core.NewUserCore(app.Database),
 		Redis: core.NewRedisCore(app.RedisClient, app.Logger),
 	}
-
 	app.Handle(http.MethodGet, "/sid", ug.GetSID)
 
 	return app

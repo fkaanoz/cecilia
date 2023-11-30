@@ -13,13 +13,18 @@ func Logger(logger *zap.SugaredLogger) web.Middleware {
 
 		h := func(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
 
-			// logging stuff should be done in here
+			logger.Infow("REQUEST", "status", "started", "trackingID", web.GetTrackingId(ctx))
+
+			if err := handler(ctx, w, r); err != nil {
+				logger.Infow("REQUEST", "status", "error", "ERROR", err, "trackingID", web.GetTrackingId(ctx))
+				return err
+			} else {
+				logger.Infow("REQUEST", "status", "successful", "trackingID", web.GetTrackingId(ctx))
+			}
 
 			return nil
 		}
-
 		return h
 	}
-
 	return m
 }

@@ -54,6 +54,8 @@ image-build:
 
 
 #################### HELPERS ########################
+cloc:
+	cloc --exclude-dir=vendor,.idea . -md
 
 create-random-password:
 	dd if=/dev/urandom bs=1 count=32 | shasum -a 256
